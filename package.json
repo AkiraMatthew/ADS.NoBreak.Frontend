@@ -1,16 +1,18 @@
 {
-  "name": "x",
-  "version": "0.0.0",
+  "name": "no-break",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
+    "dev": "ng serve --port 7200",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
   "prettier": {
-    "printWidth": 100,
+    "printWidth": 80,
     "singleQuote": true,
+    "trailingComma": "all",
     "overrides": [
       {
         "files": "*.html",
