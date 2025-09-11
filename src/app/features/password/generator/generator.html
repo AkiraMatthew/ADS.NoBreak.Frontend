@@ -1,0 +1,67 @@
+<div class="generator-container">
+    <div class="generator-header">
+        <h1>Password Generator</h1>
+        <p>Generate secure passwords with customizable options</p>
+    </div>
+
+    <p-card styleClass="generator-card">
+        <form [formGroup]="generatorForm" class="generator-form">
+
+            <div class="password-output">
+                <label>Generated Password</label>
+                <div class="password-display">
+                    <input type="text" pInputText [value]="generatedPassword" readonly
+                        placeholder="Click 'Generate Password' to create a secure password" class="password-input">
+                    <p-button icon="pi pi-copy" styleClass="p-button-outlined copy-btn" (onClick)="copyPassword()"
+                        [disabled]="!generatedPassword">
+                    </p-button>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Password Length: {{ generatorForm.get('length')?.value }}</label>
+                <p-slider formControlName="length" [min]="4" [max]="50" (onSlideEnd)="onLengthChange($event.value)">
+                </p-slider>
+            </div>
+
+            <div class="options-grid">
+                <div class="field checkbox-field">
+                    <p-checkbox formControlName="includeUppercase" inputId="uppercase">
+                    </p-checkbox>
+                    <label for="uppercase">Include Uppercase (A-Z)</label>
+                </div>
+
+                <div class="field checkbox-field">
+                    <p-checkbox formControlName="includeLowercase" inputId="lowercase">
+                    </p-checkbox>
+                    <label for="lowercase">Include Lowercase (a-z)</label>
+                </div>
+
+                <div class="field checkbox-field">
+                    <p-checkbox formControlName="includeNumbers" inputId="numbers">
+                    </p-checkbox>
+                    <label for="numbers">Include Numbers (0-9)</label>
+                </div>
+
+                <div class="field checkbox-field">
+                    <p-checkbox formControlName="includeSymbols" inputId="symbols">
+                    </p-checkbox>
+                    <label for="symbols">Include Symbols (!@#$%)</label>
+                </div>
+
+                <div class="field checkbox-field">
+                    <p-checkbox formControlName="excludeAmbiguous" inputId="ambiguous">
+                    </p-checkbox>
+                    <label for="ambiguous">Exclude Ambiguous Characters (0, O, 1, l, I)</label>
+                </div>
+            </div>
+
+            <div class="generate-section">
+                <p-button label="Generate Password" icon="pi pi-refresh" styleClass="w-full generate-btn"
+                    (onClick)="generatePassword()">
+                </p-button>
+            </div>
+
+        </form>
+    </p-card>
+</div>

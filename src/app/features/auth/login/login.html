@@ -1,0 +1,67 @@
+<div class="login-container">
+    <div class="login-card">
+        <p-card>
+            <ng-template pTemplate="header">
+                <div class="card-header">
+                    <h1>Welcome to NoBreak</h1>
+                    <p>Sign in to your account</p>
+                </div>
+            </ng-template>
+
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+                <div class="field">
+                    <label for="email">Email Address</label>
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-envelope"></i>
+                        <input id="email" type="email" pInputText formControlName="email"
+                            placeholder="Enter your email address" class="w-full">
+                    </span>
+                    <small class="p-error" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                        Please enter a valid email address
+                    </small>
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-lock"></i>
+                        <p-password id="password" formControlName="password" [toggleMask]="true" [feedback]="false"
+                            placeholder="Enter your password" styleClass="w-full" inputStyleClass="w-full">
+                        </p-password>
+                    </span>
+                    <small class="p-error"
+                        *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                        Password is required
+                    </small>
+                </div>
+
+                <div class="button-container">
+                    <p-button type="submit" label="Sign In" icon="pi pi-sign-in" [disabled]="!loginForm.valid"
+                        styleClass="w-full login-button">
+                    </p-button>
+                </div>
+
+                <div class="divider">
+                    <span>or continue with</span>
+                </div>
+
+                <div class="social-buttons">
+                    <p-button label="Google" icon="pi pi-google" styleClass="p-button-outlined google-btn"
+                        (onClick)="onGoogleLogin()">
+                    </p-button>
+                    <p-button label="Microsoft" icon="pi pi-microsoft" styleClass="p-button-outlined microsoft-btn"
+                        (onClick)="onMicrosoftLogin()">
+                    </p-button>
+                    <p-button label="Yahoo" icon="pi pi-yahoo" styleClass="p-button-outlined yahoo-btn"
+                        (onClick)="onYahooLogin()">
+                    </p-button>
+                </div>
+
+                <div class="register-link">
+                    <span>Don't have an account? </span>
+                    <a routerLink="/register" class="link">Sign up here</a>
+                </div>
+            </form>
+        </p-card>
+    </div>
+</div>

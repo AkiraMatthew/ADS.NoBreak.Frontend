@@ -1,0 +1,41 @@
+<div class="vault-container">
+    <div class="vault-header">
+        <h1>Password Vault</h1>
+        <p-button label="Add Password" icon="pi pi-plus" styleClass="add-password-btn" (onClick)="onAddPassword()">
+        </p-button>
+    </div>
+
+    <p-card styleClass="vault-card">
+        <p-table [value]="passwords" styleClass="password-table" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Title</th>
+                    <th>Username</th>
+                    <th>Website</th>
+                    <th>Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-password>
+                <tr>
+                    <td>{{ password.title }}</td>
+                    <td>{{ password.username }}</td>
+                    <td>{{ password.website || '-' }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <p-button icon="pi pi-copy" styleClass="p-button-rounded p-button-text p-button-sm"
+                                pTooltip="Copy Password" (onClick)="onCopyPassword(password.password)">
+                            </p-button>
+                            <p-button icon="pi pi-pencil" styleClass="p-button-rounded p-button-text p-button-sm"
+                                pTooltip="Edit" (onClick)="onEditPassword(password)">
+                            </p-button>
+                            <p-button icon="pi pi-trash"
+                                styleClass="p-button-rounded p-button-text p-button-danger p-button-sm"
+                                pTooltip="Delete" (onClick)="onDeletePassword(password)">
+                            </p-button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-card>
+</div>
