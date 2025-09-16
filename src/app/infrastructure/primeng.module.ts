@@ -6,6 +6,7 @@ import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @NgModule({
     imports: [
@@ -15,7 +16,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
         CardModule,
         ToastModule,
         MessageModule,
-        ProgressSpinnerModule
+        ProgressSpinnerModule,
+        CheckboxModule,
     ],
     exports: [
         ButtonModule,
@@ -24,7 +26,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
         CardModule,
         ToastModule,
         MessageModule,
-        ProgressSpinnerModule
+        ProgressSpinnerModule,
+        CheckboxModule,
     ]
 })
 export class PrimengModule { }
