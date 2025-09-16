@@ -1,8 +1,8 @@
 # Angular 20 + PrimeNG + PrimeFlex Project Guide
 
-## Building a Complete Authentication System with Modern Angular
+## Building Beautiful UI Screens with Modern Angular
 
-This comprehensive guide will walk you through creating a modern Angular 20 application with PrimeNG components and PrimeFlex utilities, focusing on building a complete authentication system with login and registration functionality.
+This comprehensive guide will walk you through creating a modern Angular 20 application with PrimeNG components and PrimeFlex utilities, focusing on building beautiful, responsive UI screens first, then adding functionality later.
 
 ---
 
@@ -13,32 +13,43 @@ This comprehensive guide will walk you through creating a modern Angular 20 appl
 3. [Project Initialization](#project-initialization)
 4. [Understanding Angular Fundamentals](#understanding-angular-fundamentals)
 5. [Setting Up PrimeNG & PrimeFlex](#setting-up-primeng--primeflex)
-6. [Authentication System Architecture](#authentication-system-architecture)
-7. [Building the Login Component](#building-the-login-component)
-8. [Creating the Registration Component](#creating-the-registration-component)
-9. [Implementing Routing & Navigation](#implementing-routing--navigation)
-10. [Creating the Dashboard Page](#creating-the-dashboard-page)
-11. [Styling & Theming](#styling--theming)
-12. [Best Practices & Security](#best-practices--security)
-13. [Troubleshooting & Common Issues](#troubleshooting--common-issues)
+6. [Screen Architecture Planning](#screen-architecture-planning)
+7. [Building the Login Screen](#building-the-login-screen)
+8. [Creating the Registration Screen](#creating-the-registration-screen)
+9. [Building the Dashboard Screen](#building-the-dashboard-screen)
+10. [Styling & Responsive Design](#styling--responsive-design)
+11. [Navigation & Routing Setup](#navigation--routing-setup)
+12. [Adding Functionality Later](#adding-functionality-later)
 
 ---
 
 ## Project Overview
 
-### What We'll Build
-- **Login Page**: Secure authentication with form validation
-- **Registration Page**: User registration with comprehensive validation
-- **Dashboard**: Simple authenticated home page
-- **Routing**: Protected routes with authentication guards
-- **Modern UI**: Responsive design using PrimeNG components and PrimeFlex utilities
+### What We'll Build (UI First Approach)
+- **Login Screen**: Beautiful authentication form with PrimeNG components
+- **Registration Screen**: User-friendly signup form with validation styling
+- **Dashboard Screen**: Clean, modern dashboard layout
+- **Responsive Design**: Mobile-first approach using PrimeFlex
+- **Component Styling**: Professional look with custom SCSS
+
+### Phase 1: UI & Styling (This Guide)
+- **Screen Components**: Create all visual components
+- **Layout & Design**: Implement responsive layouts
+- **Styling**: Custom SCSS with PrimeNG theming
+- **Static Data**: Use mock data for visual presentation
+
+### Phase 2: Functionality (Future Enhancement)
+- **Forms**: Add reactive forms and validation
+- **Services**: Implement authentication services
+- **API Integration**: Connect to backend services
+- **State Management**: Add RxJS-based state management
 
 ### Technology Stack
-- **Angular 20**: Latest Angular framework with modern features
+- **Angular 20**: Latest Angular framework with standalone components
 - **PrimeNG**: Rich UI component library
 - **PrimeFlex**: CSS utility library for responsive design
+- **SCSS**: Advanced styling capabilities
 - **TypeScript**: Type-safe development
-- **RxJS**: Reactive programming for state management
 
 ---
 
@@ -211,27 +222,37 @@ Add PrimeNG styles to your `angular.json`:
 Create `src/app/shared/primeng.module.ts`:
 
 ```typescript
-import { NgModule } from '@angular/core';
+import { NgModule } from "@angular/core";
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
-import { MessagesModule } from 'primeng/messages';
+import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @NgModule({
-  exports: [
-    ButtonModule,
-    InputTextModule,
-    PasswordModule,
-    CardModule,
-    ToastModule,
-    MessagesModule,
-    ProgressSpinnerModule
-  ]
+    imports: [
+        ButtonModule,
+        InputTextModule,
+        PasswordModule,
+        CardModule,
+        ToastModule,
+        MessageModule,
+        ProgressSpinnerModule
+    ],
+    exports: [
+        ButtonModule,
+        InputTextModule,
+        PasswordModule,
+        CardModule,
+        ToastModule,
+        MessageModule,
+        ProgressSpinnerModule
+    ]
 })
-export class PrimeNGModule { }
+
+export class PrimengModule { }
 ```
 
 **PrimeNG Concept Explained:**
@@ -242,106 +263,911 @@ export class PrimeNGModule { }
 
 ---
 
-## Authentication System Architecture
+## Screen Architecture Planning
 
-### Overview of Our Authentication System
+Before building the UI, let's plan our screen structure and visual hierarchy:
+
+### Screen Overview
+1. **Login Screen**: Clean, centered authentication form
+2. **Registration Screen**: Multi-field signup form with clear sections
+3. **Dashboard Screen**: Modern layout with navigation and content areas
+
+### Visual Design Principles
+- **Consistent Spacing**: Use PrimeFlex utilities for uniform spacing
+- **Color Harmony**: Leverage PrimeNG theme colors for consistency
+- **Typography**: Clear hierarchy with appropriate font sizes
+- **Responsive Design**: Mobile-first approach with breakpoints
+
+### Layout Structure
+
+#### Login Screen Layout
+```
+┌─────────────────────────────────┐
+│           Header Logo           │
+├─────────────────────────────────┤
+│                                 │
+│    ┌─────────────────────┐     │
+│    │                     │     │
+│    │    Login Form       │     │
+│    │                     │     │
+│    │  ┌───────────────┐  │     │
+│    │  │   Username    │  │     │
+│    │  └───────────────┘  │     │
+│    │  ┌───────────────┐  │     │
+│    │  │   Password    │  │     │
+│    │  └───────────────┘  │     │
+│    │  ┌───────────────┐  │     │
+│    │  │ [Login Button]│  │     │
+│    │  └───────────────┘  │     │
+│    │                     │     │
+│    │  Register Link      │     │
+│    └─────────────────────┘     │
+│                                 │
+└─────────────────────────────────┘
+```
+
+#### Registration Screen Layout
+```
+┌─────────────────────────────────┐
+│           Header Logo           │
+├─────────────────────────────────┤
+│                                 │
+│    ┌─────────────────────┐     │
+│    │ Registration Form   │     │
+│    │                     │     │
+│    │ Personal Info       │     │
+│    │ ┌─────┐ ┌─────────┐ │     │
+│    │ │First│ │Last Name│ │     │
+│    │ └─────┘ └─────────┘ │     │
+│    │ ┌───────────────────┐│     │
+│    │ │      Email        ││     │
+│    │ └───────────────────┘│     │
+│    │                     │     │
+│    │ Account Info        │     │
+│    │ ┌───────────────────┐│     │
+│    │ │     Username      ││     │
+│    │ └───────────────────┘│     │
+│    │ ┌───────────────────┐│     │
+│    │ │     Password      ││     │
+│    │ └───────────────────┘│     │
+│    │ ┌───────────────────┐│     │
+│    │ │ Confirm Password  ││     │
+│    │ └───────────────────┘│     │
+│    │                     │     │
+│    │ ┌─────────────────┐ │     │
+│    │ │[Register Button]│ │     │
+│    │ └─────────────────┘ │     │
+│    │ Back to Login       │     │
+│    └─────────────────────┘     │
+└─────────────────────────────────┘
+```
+
+#### Dashboard Screen Layout
+```
+┌─────────────────────────────────┐
+│        Navigation Bar           │
+├─────────────────────────────────┤
+│ Sidebar │     Main Content      │
+│         │                       │
+│  Menu   │   ┌─────────────────┐ │
+│ Items   │   │   Welcome Card  │ │
+│         │   └─────────────────┘ │
+│  ┌───┐  │   ┌─────────────────┐ │
+│  │ 📊 │  │   │  Stats Grid     │ │
+│  └───┘  │   └─────────────────┘ │
+│  ┌───┐  │   ┌─────────────────┐ │
+│  │ 👤 │  │   │  Recent Items   │ │
+│  └───┘  │   └─────────────────┘ │
+│  ┌───┐  │                       │
+│  │ ⚙️ │  │                       │
+│  └───┘  │                       │
+└─────────┴───────────────────────┘
+```
+
+### Component Structure (UI Focus)
+- **Layout Components**: Reusable layout wrappers
+- **Card Components**: Content containers with shadows and borders
+- **Form Components**: Styled input fields with consistent appearance
+- **Navigation Components**: Header, sidebar, and menu items
+
+### Screen Components We'll Build
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Login Page    │───▶│  Auth Service   │───▶│   Dashboard     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       ▲
-         ▼                       ▼                       │
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│ Registration    │    │  Route Guards   │    │  Protected      │
-│     Page        │    │                 │    │    Routes       │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+src/app/
+├── screens/
+│   ├── login/
+│   │   ├── login.component.ts
+│   │   ├── login.component.html
+│   │   └── login.component.scss
+│   ├── register/
+│   │   ├── register.component.ts
+│   │   ├── register.component.html
+│   │   └── register.component.scss
+│   └── dashboard/
+│       ├── dashboard.component.ts
+│       ├── dashboard.component.html
+│       └── dashboard.component.scss
+├── shared/
+│   ├── components/
+│   │   ├── layout/
+│   │   ├── cards/
+│   │   └── navigation/
+│   └── styles/
+│       ├── variables.scss
+│       ├── mixins.scss
+│       └── utilities.scss
+└── assets/
+    └── styles/
+        └── theme.scss
+```
+│   └── dashboard/
+│       ├── dashboard.component.ts
+│       ├── dashboard.component.html
+│       ├── dashboard.component.scss
+│       └── dashboard.service.ts
+├── shared/
+│   ├── services/
+│   │   └── storage.service.ts
+│   └── utils/
+│       └── rxjs-operators.ts
+└── core/
+    └── services/
+        └── api.service.ts
 ```
 
-### Components We'll Create
-
-1. **AuthService**: Handles login/registration logic
-2. **AuthGuard**: Protects routes that require authentication
-3. **LoginComponent**: User login interface
-4. **RegisterComponent**: User registration interface
-5. **DashboardComponent**: Protected home page
-
-### State Management Strategy
-
-We'll implement a comprehensive RxJS-based state management approach:
-- **Reactive State**: Use BehaviorSubject and observables for reactive state updates
-- **Immutable Updates**: Ensure state immutability using RxJS operators
-- **Centralized Store**: Create a centralized state service pattern
-- **Side Effects**: Handle API calls and persistence as side effects
-- **Error Handling**: Implement robust error handling with RxJS
-- **Performance**: Use RxJS operators for efficient state updates and caching
+**Benefits of Vertical Slice Architecture:**
+- **Feature Cohesion**: All related code lives together
+- **Easier Maintenance**: Changes to a feature are localized
+- **Team Collaboration**: Teams can work on features independently
+- **Testability**: Each slice can be tested in isolation
+- **Scalability**: Easy to add new features without affecting existing ones
 
 ---
 
-## Building the Login Component
+## Building the Login Screen
+
+Let's start by creating our first screen - a beautiful, responsive login form using PrimeNG components.
 
 ### Step 1: Generate the Login Component
 
-```bash
-ng generate component components/login
-```
-
-**Angular CLI Explained:**
-- `ng generate` (or `ng g`): Creates new Angular elements
-- `component`: Type of element to create
-- `components/login`: Path and name of the component
-
-### Step 2: Create the Authentication Service
+First, let's create the login component:
 
 ```bash
-ng generate service services/auth
+ng generate component screens/login --standalone
 ```
 
-Let's implement the authentication service:
+This creates:
+- `src/app/screens/login/login.component.ts`
+- `src/app/screens/login/login.component.html`
+- `src/app/screens/login/login.component.scss`
+
+### Step 2: Design the Login Screen HTML
+
+Create a clean, centered login form layout:
+
+```html
+<!-- src/app/screens/login/login.component.html -->
+<div class="login-container">
+  <div class="login-card">
+    <!-- Header Section -->
+    <div class="login-header">
+      <h2 class="text-primary">Welcome Back</h2>
+      <p class="text-600">Sign in to your account</p>
+    </div>
+
+    <!-- Login Form -->
+    <form class="login-form">
+      <div class="field">
+        <label for="username" class="block text-900 font-medium mb-2">Username or Email</label>
+        <input 
+          id="username" 
+          type="text" 
+          pInputText 
+          class="w-full" 
+          placeholder="Enter your username or email"
+          [(ngModel)]="username"
+          name="username">
+      </div>
+
+      <div class="field">
+        <label for="password" class="block text-900 font-medium mb-2">Password</label>
+        <p-password 
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="Enter your password"
+          [toggleMask]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full">
+        </p-password>
+      </div>
+
+      <div class="field-checkbox mb-4">
+        <p-checkbox 
+          id="remember" 
+          [(ngModel)]="rememberMe"
+          name="remember"
+          [binary]="true">
+        </p-checkbox>
+        <label for="remember" class="ml-2">Remember me</label>
+      </div>
+
+      <p-button 
+        label="Sign In" 
+        styleClass="w-full p-3 text-xl"
+        (onClick)="onLogin()">
+      </p-button>
+    </form>
+
+    <!-- Footer Section -->
+    <div class="login-footer">
+      <div class="text-center mb-3">
+        <a class="text-primary cursor-pointer">Forgot your password?</a>
+      </div>
+      <div class="text-center">
+        <span class="text-600">Don't have an account? </span>
+        <a routerLink="/register" class="text-primary cursor-pointer font-medium">Sign up</a>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+### Step 3: Create the Login Component TypeScript
 
 ```typescript
-// src/app/services/auth.service.ts
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, throwError, timer } from 'rxjs';
-import { 
-  map, 
-  tap, 
-  catchError, 
-  switchMap, 
-  retry, 
-  shareReplay, 
-  distinctUntilChanged,
-  filter,
-  startWith
-} from 'rxjs/operators';
+// src/app/screens/login/login.component.ts
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
-export interface LoginCredentials {
-  email: string;
-  password: string;
+// PrimeNG Imports
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { CardModule } from 'primeng/card';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    InputTextModule,
+    PasswordModule,
+    ButtonModule,
+    CheckboxModule,
+    CardModule
+  ],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
+})
+export class LoginComponent {
+  username: string = '';
+  password: string = '';
+  rememberMe: boolean = false;
+
+  onLogin() {
+    console.log('Login clicked:', {
+      username: this.username,
+      password: this.password,
+      rememberMe: this.rememberMe
+    });
+    // TODO: Add actual login logic later
+  }
+}
+```
+
+### Step 4: Style the Login Screen
+
+Create beautiful styling for the login screen:
+
+```scss
+// src/app/screens/login/login.component.scss
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem;
 }
 
-export interface RegisterData {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  firstName: string;
-  lastName: string;
+.login-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 420px;
+  
+  @media (max-width: 640px) {
+    padding: 1.5rem;
+    max-width: 350px;
+  }
 }
 
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+  }
+  
+  p {
+    font-size: 1rem;
+    margin: 0;
+  }
 }
 
-export interface AuthState {
-  user: User | null;
+.login-form {
+  .field {
+    margin-bottom: 1.5rem;
+    
+    label {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    
+    input, ::ng-deep .p-password {
+      border-radius: 8px;
+      border: 2px solid #e5e7eb;
+      transition: all 0.2s ease;
+      
+      &:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+      }
+    }
+  }
+  
+  .field-checkbox {
+    display: flex;
+    align-items: center;
+    
+    label {
+      font-size: 0.9rem;
+    }
+  }
+  
+  ::ng-deep .p-button {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.4);
+    }
+  }
+}
+
+.login-footer {
+  margin-top: 2rem;
+  
+  a {
+    text-decoration: none;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: var(--primary-700);
+    }
+  }
+}
+
+// Animation
+.login-card {
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+
+### Step 5: Update App Routes
+
+Add the login route to your routing configuration:
+
+```typescript
+// src/app/app.routes.ts
+import { Routes } from '@angular/router';
+import { LoginComponent } from './screens/login/login.component';
+
+export const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }
+];
+```
+
+---
+
+## Creating the Registration Screen
+
+Now let's build a comprehensive registration form with multiple sections and proper styling.
+
+### Step 1: Generate the Registration Component
+
+```bash
+ng generate component screens/register --standalone
+```
+
+### Step 2: Design the Registration Screen HTML
+
+Create a well-organized registration form with sections:
+
+```html
+<!-- src/app/screens/register/register.component.html -->
+<div class="register-container">
+  <div class="register-card">
+    <!-- Header Section -->
+    <div class="register-header">
+      <h2 class="text-primary">Create Account</h2>
+      <p class="text-600">Join us and get started</p>
+    </div>
+
+    <!-- Registration Form -->
+    <form class="register-form">
+      <!-- Personal Information Section -->
+      <div class="form-section">
+        <h4 class="section-title">Personal Information</h4>
+        
+        <div class="field-group">
+          <div class="field half-width">
+            <label for="firstName" class="block text-900 font-medium mb-2">First Name</label>
+            <input 
+              id="firstName" 
+              type="text" 
+              pInputText 
+              class="w-full" 
+              placeholder="John"
+              [(ngModel)]="firstName"
+              name="firstName">
+          </div>
+          
+          <div class="field half-width">
+            <label for="lastName" class="block text-900 font-medium mb-2">Last Name</label>
+            <input 
+              id="lastName" 
+              type="text" 
+              pInputText 
+              class="w-full" 
+              placeholder="Doe"
+              [(ngModel)]="lastName"
+              name="lastName">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email" class="block text-900 font-medium mb-2">Email Address</label>
+          <input 
+            id="email" 
+            type="email" 
+            pInputText 
+            class="w-full" 
+            placeholder="john.doe@example.com"
+            [(ngModel)]="email"
+            name="email">
+        </div>
+      </div>
+
+      <!-- Account Information Section -->
+      <div class="form-section">
+        <h4 class="section-title">Account Information</h4>
+        
+        <div class="field">
+          <label for="username" class="block text-900 font-medium mb-2">Username</label>
+          <input 
+            id="username" 
+            type="text" 
+            pInputText 
+            class="w-full" 
+            placeholder="johndoe"
+            [(ngModel)]="username"
+            name="username">
+        </div>
+
+        <div class="field">
+          <label for="password" class="block text-900 font-medium mb-2">Password</label>
+          <p-password 
+            id="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Enter a strong password"
+            [toggleMask]="true"
+            [promptLabel]="'Choose a password'"
+            [weakLabel]="'Too simple'"
+            [mediumLabel]="'Average complexity'"
+            [strongLabel]="'Complex password'"
+            styleClass="w-full"
+            inputStyleClass="w-full">
+          </p-password>
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword" class="block text-900 font-medium mb-2">Confirm Password</label>
+          <p-password 
+            id="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            placeholder="Confirm your password"
+            [toggleMask]="true"
+            [feedback]="false"
+            styleClass="w-full"
+            inputStyleClass="w-full">
+          </p-password>
+        </div>
+      </div>
+
+      <!-- Terms and Conditions -->
+      <div class="field-checkbox mb-4">
+        <p-checkbox 
+          id="terms" 
+          [(ngModel)]="acceptTerms"
+          name="terms"
+          [binary]="true">
+        </p-checkbox>
+        <label for="terms" class="ml-2">
+          I agree to the <a href="#" class="text-primary">Terms of Service</a> and 
+          <a href="#" class="text-primary">Privacy Policy</a>
+        </label>
+      </div>
+
+      <p-button 
+        label="Create Account" 
+        icon="pi pi-user-plus"
+        styleClass="w-full p-3 text-xl"
+        (onClick)="onRegister()">
+      </p-button>
+    </form>
+
+    <!-- Footer Section -->
+    <div class="register-footer">
+      <div class="text-center">
+        <span class="text-600">Already have an account? </span>
+        <a routerLink="/login" class="text-primary cursor-pointer font-medium">Sign in</a>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+### Step 3: Create the Registration Component TypeScript
+
+```typescript
+// src/app/screens/register/register.component.ts
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+
+// PrimeNG Imports
+import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { CardModule } from 'primeng/card';
+
+@Component({
+  selector: 'app-register',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    InputTextModule,
+    PasswordModule,
+    ButtonModule,
+    CheckboxModule,
+    CardModule
+  ],
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss']
+})
+export class RegisterComponent {
+  // Personal Information
+  firstName: string = '';
+  lastName: string = '';
+  email: string = '';
+  
+  // Account Information
+  username: string = '';
+  password: string = '';
+  confirmPassword: string = '';
+  
+  // Terms acceptance
+  acceptTerms: boolean = false;
+
+  onRegister() {
+    console.log('Register clicked:', {
+      firstName: this.firstName,
+      lastName: this.lastName,
+      email: this.email,
+      username: this.username,
+      password: this.password,
+      confirmPassword: this.confirmPassword,
+      acceptTerms: this.acceptTerms
+    });
+    // TODO: Add actual registration logic later
+  }
+}
+```
+
+### Step 4: Style the Registration Screen
+
+```scss
+// src/app/screens/register/register.component.scss
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 1rem;
+}
+
+.register-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 520px;
+  
+  @media (max-width: 640px) {
+    padding: 1.5rem;
+    max-width: 400px;
+  }
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+  }
+  
+  p {
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+.register-form {
+  .form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    
+    &:last-of-type {
+      border-bottom: none;
+      margin-bottom: 1rem;
+    }
+  }
+  
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-color);
+    display: inline-block;
+  }
+  
+  .field-group {
+    display: flex;
+    gap: 1rem;
+    
+    @media (max-width: 640px) {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  }
+  
+  .field {
+    margin-bottom: 1.5rem;
+    
+    &.half-width {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    
+    label {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    
+    input, ::ng-deep .p-password {
+      border-radius: 8px;
+      border: 2px solid #e5e7eb;
+      transition: all 0.2s ease;
+      
+      &:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+      }
+    }
+  }
+  
+  .field-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    
+    label {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      
+      a {
+        text-decoration: none;
+        transition: color 0.2s ease;
+        
+        &:hover {
+          color: var(--primary-700);
+        }
+      }
+    }
+  }
+  
+  ::ng-deep .p-button {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.4);
+    }
+  }
+}
+
+.register-footer {
+  margin-top: 2rem;
+  text-align: center;
+  
+  a {
+    text-decoration: none;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: var(--primary-700);
+    }
+  }
+}
+
+// Animation
+.register-card {
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Password strength indicator styling
+::ng-deep .p-password-meter {
+  margin-top: 0.5rem;
+}
+
+::ng-deep .p-password-info {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+```
+
+### Step 5: Update Routes for Registration
+
+Add the registration route:
+
+```typescript
+// src/app/app.routes.ts
+import { Routes } from '@angular/router';
+import { LoginComponent } from './screens/login/login.component';
+import { RegisterComponent } from './screens/register/register.component';
+
+export const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }
+];
+```
   isLoading: boolean;
   error: string | null;
   isAuthenticated: boolean;
 }
+```
+
+### Step 2: Create Storage Service (Shared Infrastructure)
+
+### Step 2: Create Storage Service (Shared Infrastructure)
+
+**Objective:** Create a centralized, secure, and reliable storage service that handles localStorage operations with proper error handling and type safety. This service will be reused across different features.
+
+**Motivation:** Direct localStorage manipulation throughout the app leads to inconsistent error handling, potential security issues, and code duplication. A centralized storage service provides a single point of control for data persistence, making it easier to implement security measures, handle errors gracefully, and potentially switch storage mechanisms in the future.
+
+```typescript
+// src/app/shared/services/storage.service.ts
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class StorageService {
+  setItem(key: string, value: any): void {
+    try {
+      const serializedValue = JSON.stringify(value);
+      localStorage.setItem(key, serializedValue);
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
+  }
+
+  getItem<T>(key: string): T | null {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : null;
+    } catch (error) {
+      console.error('Error reading from localStorage:', error);
+      return null;
+    }
+  }
+
+  removeItem(key: string): void {
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error('Error removing from localStorage:', error);
+    }
+  }
+
+  clear(): void {
+    try {
+      localStorage.clear();
+    } catch (error) {
+      console.error('Error clearing localStorage:', error);
+    }
+  }
+}
+```
+
+### Step 3: Create Notification Service
+
+**Objective:** Implement a reactive notification system that provides consistent, user-friendly feedback throughout the application using RxJS observables for real-time updates.
+
+**Motivation:** User feedback is crucial for good UX. Without a centralized notification system, each component would handle messages differently, leading to inconsistent user experience. This service provides a single source of truth for notifications, automatic cleanup, and reactive updates that integrate seamlessly with Angular's change detection.
+
+```typescript
+// src/app/shared/services/notification.service.ts
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, timer } from 'rxjs';
 
 export interface AppNotification {
   id: string;
@@ -353,74 +1179,11 @@ export interface AppNotification {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
-  // State Management with RxJS
-  private readonly initialState: AuthState = {
-    user: null,
-    isLoading: false,
-    error: null,
-    isAuthenticated: false
-  };
-
-  private readonly stateSubject = new BehaviorSubject<AuthState>(this.initialState);
-  
-  // Public observables with specific selectors
-  public readonly state$ = this.stateSubject.asObservable();
-  public readonly user$ = this.state$.pipe(
-    map(state => state.user),
-    distinctUntilChanged()
-  );
-  public readonly isLoading$ = this.state$.pipe(
-    map(state => state.isLoading),
-    distinctUntilChanged()
-  );
-  public readonly error$ = this.state$.pipe(
-    map(state => state.error),
-    distinctUntilChanged(),
-    filter(error => error !== null)
-  );
-  public readonly isAuthenticated$ = this.state$.pipe(
-    map(state => state.isAuthenticated),
-    distinctUntilChanged()
-  );
-
-  // Notification system using RxJS
+export class NotificationService {
   private readonly notificationsSubject = new BehaviorSubject<AppNotification[]>([]);
   public readonly notifications$ = this.notificationsSubject.asObservable();
 
-  constructor(private http: HttpClient) {
-    this.initializeAuthState();
-  }
-
-  private initializeAuthState(): void {
-    // Check stored authentication state on service initialization
-    const storedUser = this.getStoredUser();
-    if (storedUser) {
-      this.updateState({
-        user: storedUser,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null
-      });
-    }
-  }
-
-  private getStoredUser(): User | null {
-    try {
-      const stored = localStorage.getItem('currentUser');
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  }
-
-  private updateState(partialState: Partial<AuthState>): void {
-    const currentState = this.stateSubject.value;
-    const newState = { ...currentState, ...partialState };
-    this.stateSubject.next(newState);
-  }
-
-  private addNotification(notification: Omit<AppNotification, 'id' | 'timestamp'>): void {
+  addNotification(notification: Omit<AppNotification, 'id' | 'timestamp'>): void {
     const newNotification: AppNotification = {
       ...notification,
       id: Math.random().toString(36).substr(2, 9),
@@ -442,168 +1205,221 @@ export class AuthService {
     this.notificationsSubject.next(updatedNotifications);
   }
 
-  login(credentials: LoginCredentials): Observable<User> {
-    // Set loading state
-    this.updateState({ isLoading: true, error: null });
-
-    return this.simulateApiCall(credentials).pipe(
-      retry(2), // Retry failed requests twice
-      tap(user => {
-        // Update state on successful login
-        this.updateState({
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-          error: null
-        });
-        
-        // Persist user data
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        
-        // Add success notification
-        this.addNotification({
-          message: `Welcome back, ${user.firstName}!`,
-          type: 'success'
-        });
-      }),
-      catchError(error => {
-        // Update state on error
-        this.updateState({
-          isLoading: false,
-          error: error.message || 'Login failed'
-        });
-        
-        // Add error notification
-        this.addNotification({
-          message: error.message || 'Login failed',
-          type: 'error'
-        });
-        
-        return throwError(() => error);
-      }),
-      shareReplay(1) // Cache the result
-    );
+  clearAll(): void {
+    this.notificationsSubject.next([]);
   }
 
-  register(userData: RegisterData): Observable<User> {
-    this.updateState({ isLoading: true, error: null });
-
-    return this.simulateRegistration(userData).pipe(
-      retry(2),
-      tap(user => {
-        this.updateState({
-          user,
-          isAuthenticated: true,
-          isLoading: false,
-          error: null
-        });
-        
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        
-        this.addNotification({
-          message: `Welcome to our platform, ${user.firstName}!`,
-          type: 'success'
-        });
-      }),
-      catchError(error => {
-        this.updateState({
-          isLoading: false,
-          error: error.message || 'Registration failed'
-        });
-        
-        this.addNotification({
-          message: error.message || 'Registration failed',
-          type: 'error'
-        });
-        
-        return throwError(() => error);
-      }),
-      shareReplay(1)
-    );
+  // Convenience methods
+  showSuccess(message: string): void {
+    this.addNotification({ message, type: 'success' });
   }
 
-  logout(): Observable<void> {
-    this.updateState({ isLoading: true });
-
-    // Simulate logout API call
-    return of(null).pipe(
-      switchMap(() => {
-        // Clear state
-        this.updateState({
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-          error: null
-        });
-        
-        // Clear storage
-        localStorage.removeItem('currentUser');
-        
-        // Add notification
-        this.addNotification({
-          message: 'You have been successfully logged out',
-          type: 'info'
-        });
-
-        return of(undefined);
-      })
-    );
+  showError(message: string): void {
+    this.addNotification({ message, type: 'error' });
   }
 
-  // Method to check if user is authenticated (synchronous)
-  isAuthenticated(): boolean {
-    return this.stateSubject.value.isAuthenticated;
+  showInfo(message: string): void {
+    this.addNotification({ message, type: 'info' });
   }
 
-  // Method to get current user (synchronous)
-  getCurrentUser(): User | null {
-    return this.stateSubject.value.user;
+  showWarning(message: string): void {
+    this.addNotification({ message, type: 'warning' });
+  }
+}
+```
+
+### Step 4: Create Authentication State Service
+
+**Objective:** Implement a centralized state management service using RxJS that handles authentication state, provides reactive streams for components to subscribe to, and maintains data consistency across the application.
+
+**Motivation:** In modern Angular applications, state management is crucial for maintaining data consistency and enabling reactive UI updates. This service acts as a single source of truth for authentication state, preventing issues like stale data, inconsistent UI states, and enabling real-time updates across multiple components when authentication status changes.
+
+```typescript
+// src/app/features/auth/shared/services/auth-state.service.ts
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { map, distinctUntilChanged, filter } from 'rxjs/operators';
+import { AuthState, User } from '../models/auth.interfaces';
+import { StorageService } from '../../../../shared/services/storage.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthStateService {
+  private readonly STORAGE_KEY = 'currentUser';
+  
+  private readonly initialState: AuthState = {
+    user: null,
+    isLoading: false,
+    error: null,
+    isAuthenticated: false
+  };
+
+  private readonly stateSubject = new BehaviorSubject<AuthState>(this.initialState);
+  
+  // Public observables with specific selectors
+  public readonly state$ = this.stateSubject.asObservable();
+  
+  public readonly user$ = this.state$.pipe(
+    map(state => state.user),
+    distinctUntilChanged()
+  );
+  
+  public readonly isLoading$ = this.state$.pipe(
+    map(state => state.isLoading),
+    distinctUntilChanged()
+  );
+  
+  public readonly error$ = this.state$.pipe(
+    map(state => state.error),
+    distinctUntilChanged(),
+    filter(error => error !== null)
+  );
+  
+  public readonly isAuthenticated$ = this.state$.pipe(
+    map(state => state.isAuthenticated),
+    distinctUntilChanged()
+  );
+
+  constructor(private storageService: StorageService) {
+    this.initializeState();
   }
 
-  // Clear error state
+  private initializeState(): void {
+    const storedUser = this.storageService.getItem<User>(this.STORAGE_KEY);
+    if (storedUser) {
+      this.updateState({
+        user: storedUser,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null
+      });
+    }
+  }
+
+  updateState(partialState: Partial<AuthState>): void {
+    const currentState = this.stateSubject.value;
+    const newState = { ...currentState, ...partialState };
+    this.stateSubject.next(newState);
+  }
+
+  setUser(user: User): void {
+    this.updateState({
+      user,
+      isAuthenticated: true,
+      isLoading: false,
+      error: null
+    });
+    this.storageService.setItem(this.STORAGE_KEY, user);
+  }
+
+  clearUser(): void {
+    this.updateState({
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+      error: null
+    });
+    this.storageService.removeItem(this.STORAGE_KEY);
+  }
+
+  setLoading(isLoading: boolean): void {
+    this.updateState({ isLoading });
+  }
+
+  setError(error: string | null): void {
+    this.updateState({ error, isLoading: false });
+  }
+
   clearError(): void {
     this.updateState({ error: null });
   }
 
-  // Refresh user data
-  refreshUser(): Observable<User> {
-    const currentUser = this.getCurrentUser();
-    if (!currentUser) {
-      return throwError(() => new Error('No authenticated user'));
-    }
-
-    this.updateState({ isLoading: true });
-
-    // Simulate refresh API call
-    return this.simulateUserRefresh(currentUser.id).pipe(
-      tap(user => {
-        this.updateState({
-          user,
-          isLoading: false,
-          error: null
-        });
-        localStorage.setItem('currentUser', JSON.stringify(user));
-      }),
-      catchError(error => {
-        this.updateState({
-          isLoading: false,
-          error: error.message || 'Failed to refresh user data'
-        });
-        return throwError(() => error);
-      })
-    );
+  // Synchronous getters
+  getCurrentUser(): User | null {
+    return this.stateSubject.value.user;
   }
 
-  // Simulate API calls with realistic behavior
-  private simulateApiCall(credentials: LoginCredentials): Observable<User> {
-    return timer(1500).pipe( // Simulate network delay
+  isAuthenticated(): boolean {
+    return this.stateSubject.value.isAuthenticated;
+  }
+
+  isLoading(): boolean {
+    return this.stateSubject.value.isLoading;
+  }
+}
+```
+
+### Step 5: Create Auth API Service
+
+```typescript
+// src/app/features/auth/shared/services/auth-api.service.ts
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, throwError, timer } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { 
+  LoginCredentials, 
+  RegisterData, 
+  AuthResponse, 
+  User 
+} from '../models/auth.interfaces';
+import { environment } from '../../../../../environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthApiService {
+  private readonly apiUrl = environment.apiUrl || '';
+
+  constructor(private http: HttpClient) {}
+
+  login(credentials: LoginCredentials): Observable<AuthResponse> {
+    // For now, simulate API call - replace with real HTTP call later
+    return this.simulateLoginApi(credentials);
+    
+    // Real implementation would be:
+    // return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials);
+  }
+
+  register(userData: RegisterData): Observable<AuthResponse> {
+    // For now, simulate API call - replace with real HTTP call later
+    return this.simulateRegisterApi(userData);
+    
+    // Real implementation would be:
+    // return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, userData);
+  }
+
+  logout(token: string): Observable<void> {
+    // Real implementation would be:
+    // return this.http.post<void>(`${this.apiUrl}/auth/logout`, { token });
+    
+    return of(undefined);
+  }
+
+  refreshToken(refreshToken: string): Observable<AuthResponse> {
+    // Real implementation would be:
+    // return this.http.post<AuthResponse>(`${this.apiUrl}/auth/refresh`, { refreshToken });
+    
+    return this.simulateRefreshApi(refreshToken);
+  }
+
+  // Simulation methods - remove when implementing real API
+  private simulateLoginApi(credentials: LoginCredentials): Observable<AuthResponse> {
+    return timer(1500).pipe(
       switchMap(() => {
         if (credentials.email === 'user@example.com' && credentials.password === 'password') {
           return of({
-            id: '1',
-            email: credentials.email,
-            firstName: 'John',
-            lastName: 'Doe'
+            user: {
+              id: '1',
+              email: credentials.email,
+              firstName: 'John',
+              lastName: 'Doe',
+              createdAt: new Date(),
+              lastLoginAt: new Date()
+            },
+            token: 'mock-jwt-token',
+            refreshToken: 'mock-refresh-token'
           });
         }
         return throwError(() => new Error('Invalid email or password'));
@@ -611,35 +1427,166 @@ export class AuthService {
     );
   }
 
-  private simulateRegistration(userData: RegisterData): Observable<User> {
+  private simulateRegisterApi(userData: RegisterData): Observable<AuthResponse> {
     return timer(2000).pipe(
       switchMap(() => {
-        // Simulate email already exists check
         if (userData.email === 'existing@example.com') {
           return throwError(() => new Error('Email already exists'));
         }
         
         return of({
-          id: Math.random().toString(36).substr(2, 9),
-          email: userData.email,
-          firstName: userData.firstName,
-          lastName: userData.lastName
+          user: {
+            id: Math.random().toString(36).substr(2, 9),
+            email: userData.email,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            createdAt: new Date(),
+            lastLoginAt: new Date()
+          },
+          token: 'mock-jwt-token',
+          refreshToken: 'mock-refresh-token'
         });
       })
     );
   }
 
-  private simulateUserRefresh(userId: string): Observable<User> {
+  private simulateRefreshApi(refreshToken: string): Observable<AuthResponse> {
     return timer(1000).pipe(
       switchMap(() => {
         return of({
-          id: userId,
-          email: 'user@example.com',
-          firstName: 'John',
-          lastName: 'Doe'
+          user: {
+            id: '1',
+            email: 'user@example.com',
+            firstName: 'John',
+            lastName: 'Doe',
+            createdAt: new Date(),
+            lastLoginAt: new Date()
+          },
+          token: 'new-mock-jwt-token',
+          refreshToken: 'new-mock-refresh-token'
         });
       })
     );
+  }
+}
+```
+
+### Step 6: Create Password Validators
+
+**Objective:** Implement reusable custom validators that enforce strong password policies and ensure password confirmation matches, providing real-time feedback to users during form input.
+
+**Motivation:** Password security is critical for user account protection. Custom validators provide immediate feedback, improve user experience by guiding users to create secure passwords, and maintain consistent validation logic across the application. This prevents weak passwords and reduces security vulnerabilities.
+
+```typescript
+// src/app/features/auth/shared/validators/password.validators.ts
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+
+export class PasswordValidators {
+  static passwordStrength(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) return null;
+
+      const hasNumber = /[0-9]/.test(value);
+      const hasUpper = /[A-Z]/.test(value);
+      const hasLower = /[a-z]/.test(value);
+      const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value);
+
+      const valid = hasNumber && hasUpper && hasLower && hasSpecial;
+      
+      if (!valid) {
+        return { 
+          passwordStrength: {
+            hasNumber,
+            hasUpper, 
+            hasLower,
+            hasSpecial
+          }
+        };
+      }
+
+      return null;
+    };
+  }
+
+  static passwordMatch(passwordControlName: string, confirmPasswordControlName: string): ValidatorFn {
+    return (form: AbstractControl): ValidationErrors | null => {
+      const password = form.get(passwordControlName);
+      const confirmPassword = form.get(confirmPasswordControlName);
+
+      if (!password || !confirmPassword) return null;
+
+      if (password.value !== confirmPassword.value) {
+        confirmPassword.setErrors({ passwordMismatch: true });
+        return { passwordMismatch: true };
+      } else {
+        if (confirmPassword.errors) {
+          delete confirmPassword.errors['passwordMismatch'];
+          if (Object.keys(confirmPassword.errors).length === 0) {
+            confirmPassword.setErrors(null);
+          }
+        }
+      }
+
+      return null;
+    };
+  }
+}
+```
+
+### Step 7: Create Login Service
+
+**Objective:** Implement a feature-specific service that orchestrates the login process by coordinating between API calls, state management, and user notifications while handling errors gracefully.
+
+**Motivation:** Following the Vertical Slice Architecture, each feature should have its own service that handles business logic specific to that feature. This keeps the login component lightweight and focused on UI concerns while ensuring the login process is robust, testable, and maintainable.
+
+```typescript
+// src/app/features/auth/login/login.service.ts
+import { Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { tap, catchError, retry, shareReplay, map } from 'rxjs/operators';
+import { LoginCredentials, User } from '../shared/models/auth.interfaces';
+import { AuthApiService } from '../shared/services/auth-api.service';
+import { AuthStateService } from '../shared/services/auth-state.service';
+import { NotificationService } from '../shared/services/notification.service';
+
+@Injectable()
+export class LoginService {
+  constructor(
+    private authApiService: AuthApiService,
+    private authStateService: AuthStateService,
+    private notificationService: NotificationService
+  ) {}
+
+  login(credentials: LoginCredentials): Observable<User> {
+    this.authStateService.setLoading(true);
+    this.authStateService.clearError();
+
+    return this.authApiService.login(credentials).pipe(
+      retry(2),
+      tap(response => {
+        this.authStateService.setUser(response.user);
+        this.notificationService.addNotification({
+          message: `Welcome back, ${response.user.firstName}!`,
+          type: 'success'
+        });
+      }),
+      map(response => response.user),
+      catchError(error => {
+        const errorMessage = error.message || 'Login failed';
+        this.authStateService.setError(errorMessage);
+        this.notificationService.addNotification({
+          message: errorMessage,
+          type: 'error'
+        });
+        return throwError(() => error);
+      }),
+      shareReplay(1)
+    );
+  }
+
+  clearError(): void {
+    this.authStateService.clearError();
   }
 }
 ```
@@ -777,34 +1724,225 @@ catchError(error => {
 - **User Experience**: Consistent error messaging
 - **Debugging**: Centralized error logging
 
-#### 5. **Notification System with RxJS**
+### Step 10: Create Dashboard Component
+
+**Objective:** Implement a protected dashboard component that serves as the main landing page for authenticated users, demonstrating how to consume authentication state and provide a foundation for the main application features.
+
+**Motivation:** The dashboard represents the successful completion of the authentication flow and serves as the hub for authenticated users. It demonstrates how to properly consume authentication state, implement feature-specific services, and provides a template for building other protected components in the application.
+
+```bash
+ng generate component features/dashboard
+```
 
 ```typescript
-// Reactive notification system
-private readonly notificationsSubject = new BehaviorSubject<AppNotification[]>([]);
-public readonly notifications$ = this.notificationsSubject.asObservable();
+// src/app/features/dashboard/dashboard.component.ts
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { AuthStateService } from '../auth/shared/services/auth-state.service';
+import { DashboardService } from './dashboard.service';
 
-private addNotification(notification: Omit<AppNotification, 'id' | 'timestamp'>): void {
-  const newNotification: AppNotification = {
-    ...notification,
-    id: Math.random().toString(36).substr(2, 9),
-    timestamp: new Date()
-  };
-  
-  const currentNotifications = this.notificationsSubject.value;
-  this.notificationsSubject.next([...currentNotifications, newNotification]);
+@Component({
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss'],
+  providers: [DashboardService]
+})
+export class DashboardComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
 
-  // Auto-remove notification after 5 seconds
-  timer(5000).subscribe(() => {
-    this.removeNotification(newNotification.id);
-  });
+  user$ = this.authStateService.currentUser$;
+  isLoading$ = this.dashboardService.isLoading$;
+  dashboardData$ = this.dashboardService.dashboardData$;
+
+  constructor(
+    private authStateService: AuthStateService,
+    private dashboardService: DashboardService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadDashboardData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadDashboardData(): void {
+    this.dashboardService.loadDashboardData()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe();
+  }
+
+  logout(): void {
+    this.authStateService.logout();
+  }
+
+  refreshData(): void {
+    this.loadDashboardData();
+  }
 }
 ```
 
-**Key Benefits:**
-- **Reactive UI**: Notifications automatically appear/disappear
-- **Memory Management**: Auto-cleanup prevents memory leaks
-- **Flexibility**: Easy to add different notification types
+```typescript
+// src/app/features/dashboard/dashboard.service.ts
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap, catchError, finalize } from 'rxjs/operators';
+import { NotificationService } from '../../shared/services/notification.service';
+
+export interface DashboardData {
+  totalUsers: number;
+  activeProjects: number;
+  recentActivities: string[];
+  systemHealth: 'good' | 'warning' | 'critical';
+}
+
+@Injectable()
+export class DashboardService {
+  private loadingSubject = new BehaviorSubject<boolean>(false);
+  private dashboardDataSubject = new BehaviorSubject<DashboardData | null>(null);
+
+  isLoading$ = this.loadingSubject.asObservable();
+  dashboardData$ = this.dashboardDataSubject.asObservable();
+
+  constructor(private notificationService: NotificationService) {}
+
+  loadDashboardData(): Observable<DashboardData> {
+    this.loadingSubject.next(true);
+
+    // Simulate API call
+    const mockData: DashboardData = {
+      totalUsers: 1250,
+      activeProjects: 23,
+      recentActivities: [
+        'User John Doe logged in',
+        'New project "Mobile App" created',
+        'System backup completed',
+        'User Jane Smith updated profile'
+      ],
+      systemHealth: 'good'
+    };
+
+    return of(mockData).pipe(
+      tap((data) => {
+        this.dashboardDataSubject.next(data);
+        this.notificationService.showInfo('Dashboard data loaded');
+      }),
+      catchError((error) => {
+        this.notificationService.showError('Failed to load dashboard data');
+        throw error;
+      }),
+      finalize(() => {
+        this.loadingSubject.next(false);
+      })
+    );
+  }
+}
+```
+
+### Step 11: Update Routing with Guards
+
+**Objective:** Implement route guards that enforce authentication requirements, protect sensitive areas of the application, and provide seamless navigation flow between authenticated and unauthenticated states.
+
+**Motivation:** Route guards are essential for application security and user experience. They prevent unauthorized access to protected routes, handle redirection logic automatically, and ensure that users are guided through the proper authentication flow. This creates a secure and intuitive navigation experience throughout the application.
+
+```typescript
+// src/app/features/auth/shared/guards/auth.guard.ts
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+import { Observable, map } from 'rxjs';
+import { AuthStateService } from '../services/auth-state.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard implements CanActivate {
+  constructor(
+    private authStateService: AuthStateService,
+    private router: Router
+  ) {}
+
+  canActivate(): Observable<boolean> {
+    return this.authStateService.isAuthenticated$.pipe(
+      map(isAuthenticated => {
+        if (!isAuthenticated) {
+          this.router.navigate(['/login']);
+          return false;
+        }
+        return true;
+      })
+    );
+  }
+}
+```
+
+```typescript
+// src/app/features/auth/shared/guards/guest.guard.ts
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+import { Observable, map } from 'rxjs';
+import { AuthStateService } from '../services/auth-state.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class GuestGuard implements CanActivate {
+  constructor(
+    private authStateService: AuthStateService,
+    private router: Router
+  ) {}
+
+  canActivate(): Observable<boolean> {
+    return this.authStateService.isAuthenticated$.pipe(
+      map(isAuthenticated => {
+        if (isAuthenticated) {
+          this.router.navigate(['/dashboard']);
+          return false;
+        }
+        return true;
+      })
+    );
+  }
+}
+```
+
+Updated routes configuration:
+
+```typescript
+// src/app/app.routes.ts
+import { Routes } from '@angular/router';
+import { AuthGuard } from './features/auth/shared/guards/auth.guard';
+import { GuestGuard } from './features/auth/shared/guards/guest.guard';
+
+export const routes: Routes = [
+  {
+    path: '',
+    redirectTo: '/dashboard',
+    pathMatch: 'full'
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent),
+    canActivate: [GuestGuard]
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent),
+    canActivate: [GuestGuard]
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: '**',
+    redirectTo: '/dashboard'
+  }
+];
+```
 
 #### 6. **Performance Optimization Patterns**
 
@@ -902,50 +2040,58 @@ describe('AuthService', () => {
 
 ---
 
-### Step 3: Implement the Login Component with RxJS
+### Step 8: Create Login Component
+
+**Objective:** Build a reactive login component that provides an intuitive user interface for authentication while integrating seamlessly with the underlying services and state management system.
+
+**Motivation:** The login component is the user's first interaction with the authentication system. It needs to be user-friendly, provide clear feedback, handle errors gracefully, and integrate properly with the Vertical Slice Architecture by using the dedicated LoginService for business logic.
+
+```bash
+ng generate component features/auth/login
+```
 
 ```typescript
-// src/app/components/login/login.component.ts
+// src/app/features/auth/login/login.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil, map, startWith } from 'rxjs/operators';
-import { AuthService, LoginCredentials } from '../../services/auth.service';
+import { LoginCredentials } from '../shared/models/auth.interfaces';
+import { LoginService } from './login.service';
+import { AuthStateService } from '../shared/services/auth-state.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
-  providers: [MessageService]
+  providers: [LoginService]
 })
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm!: FormGroup;
   private destroy$ = new Subject<void>();
 
-  // Reactive properties using observables
-  isLoading$ = this.authService.isLoading$;
-  error$ = this.authService.error$;
+  // Reactive properties
+  isLoading$ = this.authStateService.isLoading$;
+  error$ = this.authStateService.error$;
   
-  // Combined observable for form validation state
+  // Form validity observable
   isFormValid$ = combineLatest([
     this.isLoading$,
-    // We'll add form validity observable after form initialization
   ]).pipe(
     map(([isLoading]) => !isLoading)
   );
 
   constructor(
     private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
-    private messageService: MessageService
+    private loginService: LoginService,
+    private authStateService: AuthStateService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
-    this.setupReactiveSubscriptions();
+    this.setupSubscriptions();
   }
 
   ngOnDestroy(): void {
@@ -968,44 +2114,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     );
   }
 
-  private setupReactiveSubscriptions(): void {
-    // Listen to authentication state changes
-    this.authService.isAuthenticated$
+  private setupSubscriptions(): void {
+    this.authStateService.isAuthenticated$
       .pipe(takeUntil(this.destroy$))
       .subscribe(isAuthenticated => {
         if (isAuthenticated) {
           this.router.navigate(['/dashboard']);
         }
-      });
-
-    // Listen to error state and show messages
-    this.error$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(error => {
-        if (error) {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Login Failed',
-            detail: error
-          });
-          // Clear error after showing
-          setTimeout(() => this.authService.clearError(), 3000);
-        }
-      });
-
-    // Listen to notifications from the auth service
-    this.authService.notifications$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(notifications => {
-        notifications.forEach(notification => {
-          this.messageService.add({
-            severity: notification.type === 'error' ? 'error' : 
-                     notification.type === 'success' ? 'success' : 
-                     notification.type === 'warning' ? 'warn' : 'info',
-            summary: notification.type.charAt(0).toUpperCase() + notification.type.slice(1),
-            detail: notification.message
-          });
-        });
       });
   }
 
@@ -1013,16 +2128,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.loginForm.valid) {
       const credentials: LoginCredentials = this.loginForm.value;
 
-      this.authService.login(credentials)
+      this.loginService.login(credentials)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: (user) => {
-            // Success handling is now managed by the service
-            // Component just needs to handle navigation, which is done in setupReactiveSubscriptions
+          next: () => {
+            // Navigation handled by subscription
           },
           error: (error) => {
-            // Error handling is managed by the service
-            // Component can add additional UI-specific error handling here if needed
             console.error('Login error:', error);
           }
         });
@@ -1038,7 +2150,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Helper methods for template
   isFieldInvalid(fieldName: string): boolean {
     const field = this.loginForm.get(fieldName);
     return !!(field && field.invalid && field.touched);
@@ -1058,9 +2169,219 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.router.navigate(['/register']);
   }
 
-  // Reactive method to clear errors
   clearError(): void {
-    this.authService.clearError();
+    this.authStateService.clearError();
+  }
+}
+```
+
+```typescript
+// src/app/features/auth/login/login.service.ts
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { LoginCredentials } from '../shared/models/auth.interfaces';
+import { AuthApiService } from '../shared/services/auth-api.service';
+import { AuthStateService } from '../shared/services/auth-state.service';
+import { NotificationService } from '../../../shared/services/notification.service';
+
+@Injectable()
+export class LoginService {
+  constructor(
+    private authApiService: AuthApiService,
+    private authStateService: AuthStateService,
+    private notificationService: NotificationService
+  ) {}
+
+  login(credentials: LoginCredentials): Observable<any> {
+    this.authStateService.setLoading(true);
+    this.authStateService.clearError();
+
+    return this.authApiService.login(credentials).pipe(
+      tap({
+        next: (response) => {
+          this.authStateService.setCurrentUser(response.user);
+          this.notificationService.showSuccess('Login successful!');
+          this.authStateService.setLoading(false);
+        },
+        error: (error) => {
+          this.authStateService.setError(error.error?.message || 'Login failed');
+          this.notificationService.showError('Login failed. Please try again.');
+          this.authStateService.setLoading(false);
+        }
+      })
+    );
+  }
+}
+```
+
+### Step 9: Create Register Component
+
+**Objective:** Develop a comprehensive registration component that handles user signup with proper form validation, password strength checking, and seamless integration with the authentication system.
+
+**Motivation:** User registration is a critical conversion point in any application. The component must be intuitive, provide real-time validation feedback, and ensure data integrity while maintaining consistency with the overall authentication architecture and user experience patterns.
+
+```bash
+ng generate component features/auth/register
+```
+
+```typescript
+// src/app/features/auth/register/register.component.ts
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Subject, combineLatest } from 'rxjs';
+import { takeUntil, map, startWith } from 'rxjs/operators';
+import { RegisterData } from '../shared/models/auth.interfaces';
+import { RegisterService } from './register.service';
+import { AuthStateService } from '../shared/services/auth-state.service';
+
+@Component({
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss'],
+  providers: [RegisterService]
+})
+export class RegisterComponent implements OnInit, OnDestroy {
+  registerForm!: FormGroup;
+  private destroy$ = new Subject<void>();
+
+  isLoading$ = this.authStateService.isLoading$;
+  error$ = this.authStateService.error$;
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private registerService: RegisterService,
+    private authStateService: AuthStateService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.initializeForm();
+    this.setupSubscriptions();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initializeForm(): void {
+    this.registerForm = this.formBuilder.group({
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', [Validators.required]]
+    }, { validators: this.passwordMatchValidator });
+  }
+
+  private setupSubscriptions(): void {
+    this.authStateService.isAuthenticated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isAuthenticated => {
+        if (isAuthenticated) {
+          this.router.navigate(['/dashboard']);
+        }
+      });
+  }
+
+  private passwordMatchValidator(control: AbstractControl): {[key: string]: boolean} | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+    
+    if (!password || !confirmPassword) {
+      return null;
+    }
+    
+    return password.value === confirmPassword.value ? null : { 'passwordMismatch': true };
+  }
+
+  onSubmit(): void {
+    if (this.registerForm.valid) {
+      const { confirmPassword, ...registerData } = this.registerForm.value;
+      
+      this.registerService.register(registerData as RegisterData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          error: (error) => console.error('Registration error:', error)
+        });
+    } else {
+      this.markFormGroupTouched();
+    }
+  }
+
+  private markFormGroupTouched(): void {
+    Object.keys(this.registerForm.controls).forEach(key => {
+      const control = this.registerForm.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.registerForm.get(fieldName);
+    return !!(field && field.invalid && field.touched);
+  }
+
+  getFieldError(fieldName: string): string {
+    const field = this.registerForm.get(fieldName);
+    const formErrors = this.registerForm.errors;
+    
+    if (field?.errors && field.touched) {
+      if (field.errors['required']) return `${fieldName} is required`;
+      if (field.errors['email']) return 'Please enter a valid email';
+      if (field.errors['minlength']) return `${fieldName} must be at least ${field.errors['minlength'].requiredLength} characters`;
+    }
+    
+    if (fieldName === 'confirmPassword' && formErrors?.['passwordMismatch'] && field?.touched) {
+      return 'Passwords do not match';
+    }
+    
+    return '';
+  }
+
+  navigateToLogin(): void {
+    this.router.navigate(['/login']);
+  }
+}
+```
+
+```typescript
+// src/app/features/auth/register/register.service.ts
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { RegisterData } from '../shared/models/auth.interfaces';
+import { AuthApiService } from '../shared/services/auth-api.service';
+import { AuthStateService } from '../shared/services/auth-state.service';
+import { NotificationService } from '../../../shared/services/notification.service';
+
+@Injectable()
+export class RegisterService {
+  constructor(
+    private authApiService: AuthApiService,
+    private authStateService: AuthStateService,
+    private notificationService: NotificationService
+  ) {}
+
+  register(registerData: RegisterData): Observable<any> {
+    this.authStateService.setLoading(true);
+    this.authStateService.clearError();
+
+    return this.authApiService.register(registerData).pipe(
+      tap({
+        next: (response) => {
+          this.authStateService.setCurrentUser(response.user);
+          this.notificationService.showSuccess('Registration successful!');
+          this.authStateService.setLoading(false);
+        },
+        error: (error) => {
+          this.authStateService.setError(error.error?.message || 'Registration failed');
+          this.notificationService.showError('Registration failed. Please try again.');
+          this.authStateService.setLoading(false);
+        }
+      })
+    );
   }
 }
 ```
@@ -2485,18 +3806,20 @@ PrimeFlex provides utility classes for common CSS properties:
    - Load PrimeNG modules only where needed
 
 2. **OnPush Change Detection**:
-   ```typescript
-   @Component({
-     changeDetection: ChangeDetectionStrategy.OnPush
-   })
-   ```
+
+```typescript
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+```
 
 3. **Track By Functions**:
-   ```typescript
-   trackByFn(index: number, item: any): any {
-     return item.id;
-   }
-   ```
+
+```typescript
+trackByFn(index: number, item: any): any {
+  return item.id;
+}
+```
 
 4. **Subscription Management**:
    - Always unsubscribe to prevent memory leaks
