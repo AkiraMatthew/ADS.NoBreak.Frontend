@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
 import { PrimengModule } from '../../infrastructure/primeng.module';
+import { Component } from '@angular/core';
+
 
 @Component({
   selector: 'app-register',
@@ -10,5 +11,8 @@ import { PrimengModule } from '../../infrastructure/primeng.module';
 export class RegisterComponent {
   onRegister(){
     console.log("working")
+  }
+  signIn() {
+    console.log('Going to Login page');
   }
 }
