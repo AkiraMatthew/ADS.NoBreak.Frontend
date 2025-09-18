@@ -11,9 +11,6 @@ import { RouterLink } from "@angular/router";
 export class LoginComponent {
   
   onLogin() {
-    console.log('Login page');
-  }
-  signUp() {
-    console.log('Getting into the register page');
+    console.log('Logging in');
   }
 }
