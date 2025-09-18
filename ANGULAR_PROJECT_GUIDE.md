@@ -19,7 +19,10 @@ This comprehensive guide will walk you through creating a modern Angular 20 appl
 9. [Building the Dashboard Screen](#building-the-dashboard-screen)
 10. [Styling & Responsive Design](#styling--responsive-design)
 11. [Navigation & Routing Setup](#navigation--routing-setup)
-12. [Adding Functionality Later](#adding-functionality-later)
+12. [State Management with Signals](#state-management-with-signals)
+13. [Adding Functionality with Signals](#adding-functionality-with-signals)
+14. [RxJS vs Signals Comparison](#rxjs-vs-signals-comparison)
+15. [Legacy RxJS Implementation (Reference)](#legacy-rxjs-implementation-reference)
 
 ---
 
@@ -42,14 +45,64 @@ This comprehensive guide will walk you through creating a modern Angular 20 appl
 - **Forms**: Add reactive forms and validation
 - **Services**: Implement authentication services
 - **API Integration**: Connect to backend services
-- **State Management**: Add RxJS-based state management
+- **State Management**: Use Angular Signals for reactive state management
 
 ### Technology Stack
 - **Angular 20**: Latest Angular framework with standalone components
+- **Angular Signals**: Modern reactive state management (replacing RxJS)
 - **PrimeNG**: Rich UI component library
 - **PrimeFlex**: CSS utility library for responsive design
 - **SCSS**: Advanced styling capabilities
 - **TypeScript**: Type-safe development
+
+### Why Signals Over RxJS?
+
+**Angular Signals** (Angular 17+) provide a simpler, more intuitive approach to reactive programming:
+
+#### **Signals Benefits:**
+- ✅ **Simpler Syntax**: No need to learn RxJS operators
+- ✅ **Better Performance**: Granular change detection
+- ✅ **Type Safety**: Better TypeScript integration
+- ✅ **Easier Debugging**: Clear data flow
+- ✅ **Less Boilerplate**: Minimal setup required
+
+#### **RxJS vs Signals Comparison:**
+
+**RxJS Approach (Old):**
+```typescript
+// Complex Observable setup
+private userSubject = new BehaviorSubject<User | null>(null);
+public user$ = this.userSubject.asObservable();
+
+updateUser(user: User) {
+  this.userSubject.next(user);
+}
+
+// Component subscription management
+ngOnInit() {
+  this.user$.subscribe(user => {
+    this.currentUser = user;
+  });
+}
+```
+
+**Signals Approach (Modern):**
+```typescript
+// Simple Signal setup
+user = signal<User | null>(null);
+currentUser = computed(() => this.user()); // Reactive computation
+
+updateUser(user: User) {
+  this.user.set(user); // Simple update
+}
+
+// No subscription management needed!
+```
+
+**When to still use RxJS:**
+- HTTP requests (still use Angular HttpClient)
+- Complex async operations with multiple operators
+- Event streams with time-based operations
 
 ---
 
@@ -3981,4 +4034,454 @@ This documentation demonstrates a **production-ready, RxJS-based state managemen
 
 This RxJS-based state management approach provides a solid foundation that can scale from simple authentication to complex, feature-rich applications while maintaining clean, maintainable code.
 
-Happy coding! 🚀
+---
+
+## State Management with Signals
+
+**Angular Signals** represent the future of reactive programming in Angular. They provide a simpler, more performant alternative to RxJS for most state management scenarios.
+
+### Why Choose Signals Over RxJS?
+
+#### **Performance Benefits**
+- **Granular Change Detection**: Only affected components re-render
+- **No Subscription Management**: Automatic memory management
+- **Fine-grained Reactivity**: Direct property updates
+
+#### **Developer Experience**
+- **Simpler Syntax**: No operators to learn
+- **Better Debugging**: Clear execution flow
+- **Type Safety**: Enhanced TypeScript support
+- **Less Boilerplate**: Minimal setup required
+
+### Core Signal Concepts
+
+#### **1. Basic Signals**
+```typescript
+import { signal } from '@angular/core';
+
+// Writable signal
+const count = signal(0);
+
+// Reading a signal
+console.log(count()); // 0
+
+// Writing to a signal
+count.set(5);
+count.update(value => value + 1);
+```
+
+#### **2. Computed Signals**
+```typescript
+import { computed } from '@angular/core';
+
+const firstName = signal('John');
+const lastName = signal('Doe');
+
+// Automatically recomputes when dependencies change
+const fullName = computed(() => `${firstName()} ${lastName()}`);
+```
+
+#### **3. Effects**
+```typescript
+import { effect } from '@angular/core';
+
+// Automatically runs when signals change
+effect(() => {
+  console.log(`User: ${fullName()}`);
+});
+```
+
+---
+
+## Adding Functionality with Signals
+
+Let's implement our authentication system using Signals instead of RxJS.
+
+### Step 1: Create Authentication State with Signals
+
+```typescript
+// src/app/services/auth-state.service.ts
+import { Injectable, signal, computed } from '@angular/core';
+
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthStateService {
+  // Private signals
+  private _user = signal<User | null>(null);
+  private _isLoading = signal(false);
+  private _error = signal<string | null>(null);
+
+  // Public readonly signals
+  user = this._user.asReadonly();
+  isLoading = this._isLoading.asReadonly();
+  error = this._error.asReadonly();
+
+  // Computed signals
+  isAuthenticated = computed(() => this._user() !== null);
+  userDisplayName = computed(() => {
+    const user = this._user();
+    return user ? `${user.firstName} ${user.lastName}` : '';
+  });
+
+  // Actions
+  setUser(user: User | null) {
+    this._user.set(user);
+    this._error.set(null);
+  }
+
+  setLoading(loading: boolean) {
+    this._isLoading.set(loading);
+  }
+
+  setError(error: string | null) {
+    this._error.set(error);
+  }
+
+  clearError() {
+    this._error.set(null);
+  }
+
+  logout() {
+    this._user.set(null);
+    this._error.set(null);
+  }
+}
+```
+
+### Step 2: Create Authentication Service with Signals
+
+```typescript
+// src/app/services/auth.service.ts
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { AuthStateService, User } from './auth-state.service';
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+  private authState = inject(AuthStateService);
+
+  async login(credentials: LoginCredentials): Promise<void> {
+    try {
+      this.authState.setLoading(true);
+      this.authState.clearError();
+
+      // Simulate API call
+      const response = await this.mockLogin(credentials);
+      
+      // Store token
+      localStorage.setItem('auth_token', response.token);
+      
+      // Update state
+      this.authState.setUser(response.user);
+      
+      // Navigate to dashboard
+      await this.router.navigate(['/dashboard']);
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      this.authState.setError(errorMessage);
+    } finally {
+      this.authState.setLoading(false);
+    }
+  }
+
+  async register(userData: any): Promise<void> {
+    try {
+      this.authState.setLoading(true);
+      this.authState.clearError();
+
+      // Simulate API call
+      const response = await this.mockRegister(userData);
+      
+      // Store token
+      localStorage.setItem('auth_token', response.token);
+      
+      // Update state
+      this.authState.setUser(response.user);
+      
+      // Navigate to dashboard
+      await this.router.navigate(['/dashboard']);
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+      this.authState.setError(errorMessage);
+    } finally {
+      this.authState.setLoading(false);
+    }
+  }
+
+  logout(): void {
+    localStorage.removeItem('auth_token');
+    this.authState.logout();
+    this.router.navigate(['/login']);
+  }
+
+  // Mock API calls (replace with real HTTP calls)
+  private async mockLogin(credentials: LoginCredentials): Promise<AuthResponse> {
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+    
+    if (credentials.email === 'test@example.com' && credentials.password === 'password') {
+      return {
+        user: {
+          id: '1',
+          email: credentials.email,
+          firstName: 'John',
+          lastName: 'Doe'
+        },
+        token: 'mock-jwt-token'
+      };
+    }
+    
+    throw new Error('Invalid credentials');
+  }
+
+  private async mockRegister(userData: any): Promise<AuthResponse> {
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+    
+    return {
+      user: {
+        id: '2',
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName
+      },
+      token: 'mock-jwt-token'
+    };
+  }
+}
+```
+
+### Step 3: Update Login Component with Signals
+
+```typescript
+// src/app/pages/login/login.component.ts
+import { Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { AuthStateService } from '../../services/auth-state.service';
+import { PrimengModule } from '../../infrastructure/primeng.module';
+
+@Component({
+  selector: 'app-login',
+  imports: [PrimengModule, RouterLink, FormsModule],
+  templateUrl: './login.html',
+  styleUrls: ['./login.scss']
+})
+export class LoginComponent {
+  private authService = inject(AuthService);
+  protected authState = inject(AuthStateService);
+
+  // Component state
+  email = signal('');
+  password = signal('');
+  rememberMe = signal(false);
+
+  async onLogin() {
+    const credentials = {
+      email: this.email(),
+      password: this.password()
+    };
+
+    await this.authService.login(credentials);
+  }
+}
+```
+
+### Step 4: Update Login Template with Signals
+
+```html
+<!-- src/app/pages/login/login.html -->
+<div class="login-container">
+  <div class="login-card">
+    <!-- Header Section -->
+    <div class="login-header">
+      <h2 class="text-primary">Welcome Back</h2>
+      <p class="text-600">Sign in to your account</p>
+    </div>
+
+    <!-- Login Form -->
+    <form class="login-form" (ngSubmit)="onLogin()">
+      <!-- Email Field -->
+      <div class="field">
+        <label for="email" class="block text-900 font-medium mb-2">Email</label>
+        <input 
+          id="email" 
+          type="email" 
+          pInputText 
+          class="w-full" 
+          placeholder="Enter your email"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          name="email"
+          required>
+      </div>
+
+      <!-- Password Field -->
+      <div class="field">
+        <label for="password" class="block text-900 font-medium mb-2">Password</label>
+        <p-password 
+          id="password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          name="password"
+          placeholder="Enter your password"
+          [toggleMask]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full">
+        </p-password>
+      </div>
+
+      <!-- Remember Me -->
+      <div class="field-checkbox mb-4">
+        <p-checkbox 
+          id="remember" 
+          [ngModel]="rememberMe()"
+          (ngModelChange)="rememberMe.set($event)"
+          name="remember"
+          [binary]="true">
+        </p-checkbox>
+        <label for="remember" class="ml-2">Remember me</label>
+      </div>
+
+      <!-- Error Message -->
+      @if (authState.error()) {
+        <div class="error-message mb-3">
+          <p class="text-red-500">{{ authState.error() }}</p>
+        </div>
+      }
+
+      <!-- Login Button -->
+      <p-button 
+        label="Sign In" 
+        type="submit"
+        [loading]="authState.isLoading()"
+        styleClass="w-full p-3 text-xl">
+      </p-button>
+    </form>
+
+    <!-- Footer Section -->
+    <div class="login-footer">
+      <div class="text-center mb-3">
+        <a class="text-primary cursor-pointer">Forgot your password?</a>
+      </div>
+      <div class="text-center">
+        <span class="text-600">Don't have an account? </span>
+        <a routerLink="/register" class="text-primary cursor-pointer font-medium">Sign up</a>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+---
+
+## RxJS vs Signals Comparison
+
+### **State Management Comparison**
+
+#### **RxJS Approach (Complex)**
+```typescript
+// RxJS - Multiple concepts to learn
+private userSubject = new BehaviorSubject<User | null>(null);
+private loadingSubject = new BehaviorSubject<boolean>(false);
+private errorSubject = new BehaviorSubject<string | null>(null);
+
+public user$ = this.userSubject.asObservable();
+public loading$ = this.loadingSubject.asObservable();
+public error$ = this.errorSubject.asObservable();
+
+public isAuthenticated$ = this.user$.pipe(
+  map(user => user !== null)
+);
+
+// Component needs subscription management
+ngOnInit() {
+  this.user$.subscribe(user => this.currentUser = user);
+}
+
+ngOnDestroy() {
+  // Must unsubscribe to prevent memory leaks
+  this.subscriptions.unsubscribe();
+}
+```
+
+#### **Signals Approach (Simple)**
+```typescript
+// Signals - Intuitive and direct
+private _user = signal<User | null>(null);
+private _loading = signal(false);
+private _error = signal<string | null>(null);
+
+user = this._user.asReadonly();
+loading = this._loading.asReadonly();
+error = this._error.asReadonly();
+
+isAuthenticated = computed(() => this._user() !== null);
+
+// No subscription management needed!
+// Direct access: this.user(), this.loading(), etc.
+```
+
+### **When to Use Each**
+
+#### **Use Signals For:**
+- ✅ **Component state management**
+- ✅ **Simple reactive data**
+- ✅ **Form handling**
+- ✅ **UI state (loading, errors)**
+- ✅ **Computed values**
+- ✅ **Most application state**
+
+#### **Use RxJS For:**
+- ✅ **HTTP requests** (Angular HttpClient)
+- ✅ **Complex async operations**
+- ✅ **Event streams**
+- ✅ **Time-based operations** (debounce, throttle)
+- ✅ **WebSocket connections**
+- ✅ **Complex data transformations**
+
+### **Migration Strategy**
+
+1. **Start with Signals** for new components
+2. **Keep RxJS** for HTTP and complex async operations
+3. **Gradually migrate** existing RxJS state to Signals
+4. **Hybrid approach** is perfectly fine during transition
+
+---
+
+## Legacy RxJS Implementation (Reference)
+
+*The following sections contain the original RxJS implementation for reference and comparison purposes. New projects should use the Signals approach documented above.*
+
+Happy coding with Signals! 🚀
