@@ -1,9 +1,9 @@
 {
-    "name": "sakai-ng",
-    "version": "20.0.0",
+    "name": "no-break-app",
+    "version": "0.0.1",
     "scripts": {
         "ng": "ng",
-        "dev": "ng serve --port 7201",
+        "dev": "ng serve --port 7200",
         "start": "ng serve",
         "build": "ng build",
         "watch": "ng build --watch --configuration development",
