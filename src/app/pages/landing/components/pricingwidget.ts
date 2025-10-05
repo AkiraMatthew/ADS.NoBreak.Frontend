@@ -9,8 +9,8 @@ import { RippleModule } from 'primeng/ripple';
     template: `
         <div id="pricing" class="py-6 px-6 lg:px-20 my-2 md:my-6">
             <div class="text-center mb-6">
-                <div class="text-surface-900 dark:text-surface-0 font-normal mb-2 text-4xl">Matchless Pricing</div>
-                <span class="text-muted-color text-2xl">Amet consectetur adipiscing elit...</span>
+                <div class="text-surface-900 dark:text-surface-0 font-normal mb-2 text-4xl">Plans</div>
+                <!-- <span class="text-muted-color text-2xl">Amet consectetur adipiscing elit...</span> -->
             </div>
 
             <div class="grid grid-cols-12 gap-4 justify-between mt-20 md:mt-0">
@@ -78,7 +78,7 @@ import { RippleModule } from 'primeng/ripple';
                             </li>
                         </ul>
                     </div>
-                </div>
+                <!-- </div>
 
                 <div class="col-span-12 lg:col-span-4 p-0 md:p-4 mt-6 md:mt-0">
                     <div class="p-4 flex flex-col border-surface-200 dark:border-surface-600 pricing-card cursor-pointer border-2 hover:border-primary duration-300 transition-all" style="border-radius: 10px">
@@ -111,9 +111,9 @@ import { RippleModule } from 'primeng/ripple';
                             </li>
                         </ul>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     `
 })
-export class PricingWidget {}
+export class PricingWidget { }

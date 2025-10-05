@@ -1,23 +1,31 @@
 import { Routes } from '@angular/router';
 import { AppLayout } from './app/layout/component/app.layout';
 import { Dashboard } from './app/pages/dashboard/dashboard';
-import { Documentation } from './app/pages/documentation/documentation';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
 
+class MainRoutesPaths {
+    static readonly homepage = 'homepage';
+    static readonly authenticatedPages = 'pages';
+    static readonly dashboard = 'dashboard';
+    static readonly authPages = 'auth';
+    static readonly notFoundPage = 'notfound';
+    static readonly otherPages = '**';
+}
+
 export const appRoutes: Routes = [
     {
-        path: '',
-        component: Landing,
+        path: MainRoutesPaths.authenticatedPages,
+        component: AppLayout,
         children: [
-            { path: 'dashboard', component: Dashboard },
+            { path: MainRoutesPaths.dashboard, component: Dashboard },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
-            { path: 'documentation', component: Documentation },
-            { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
-            { path: 'layout', component: AppLayout }
+            { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
         ]
     },
-    { path: 'notfound', component: Notfound },
-    { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
-    { path: '**', redirectTo: '/notfound' }
+    { path: MainRoutesPaths.homepage, component: Landing },
+    { path: '', redirectTo: MainRoutesPaths.homepage, pathMatch: 'full' },
+    { path: MainRoutesPaths.notFoundPage, component: Notfound },
+    { path: MainRoutesPaths.authPages, loadChildren: () => import('./app/pages/auth/auth.routes') },
+    { path: MainRoutesPaths.otherPages, redirectTo: '/notfound' }
 ];
