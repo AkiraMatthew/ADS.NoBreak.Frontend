@@ -3,19 +3,11 @@ import { AppLayout } from './app/layout/component/app.layout';
 import { Dashboard } from './app/pages/dashboard/dashboard';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
-
-class MainRoutesPaths {
-    static readonly homepage = 'homepage';
-    static readonly authenticatedPages = 'pages';
-    static readonly dashboard = 'dashboard';
-    static readonly authPages = 'auth';
-    static readonly notFoundPage = 'notfound';
-    static readonly otherPages = '**';
-}
+import { MainRoutesPaths } from '@/infra/routes.values';
 
 export const appRoutes: Routes = [
     {
-        path: MainRoutesPaths.authenticatedPages,
+        path: MainRoutesPaths.loggedInRoute,
         component: AppLayout,
         children: [
             { path: MainRoutesPaths.dashboard, component: Dashboard },

@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
 import { AppFloatingConfigurator } from "@/layout/component/app.floatingconfigurator";
+import { FullRoutesPaths } from '@/infra/routes.values';
 
 @Component({
     selector: 'topbar-widget',
@@ -42,12 +43,15 @@ import { AppFloatingConfigurator } from "@/layout/component/app.floatingconfigur
                 </li>
             </ul>
             <div class="flex border-t lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2">
-                <button pButton pRipple label="Login" routerLink="/auth/login" [rounded]="true" [text]="true"></button>
-                <button pButton pRipple label="Register" routerLink="/auth/register" [rounded]="true"></button>
+                <button pButton pRipple label="Login" [routerLink]="loginPage" [rounded]="true" [text]="true"></button>
+                <button pButton pRipple label="Register" [routerLink]="registerPage" [rounded]="true"></button>
                 <app-floating-configurator [float]="false"/>
             </div>
         </div> `
 })
 export class TopbarWidget {
     constructor(public router: Router) { }
+
+    protected readonly loginPage = FullRoutesPaths.loginPage;
+    protected readonly registerPage = FullRoutesPaths.registerPage;
 }
